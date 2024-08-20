@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net"
 	"net/http"
 	"strings"
@@ -33,7 +32,6 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data envelo
 
 func getClientIP(r *http.Request) (string, error) {
 	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
-		log.Println("X-Forwarded-For", forwarded)
 		return strings.TrimSpace(strings.Split(forwarded, ",")[0]), nil
 	}
 
@@ -41,8 +39,6 @@ func getClientIP(r *http.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	log.Println("Client-IP", host)
 
 	return host, nil
 }

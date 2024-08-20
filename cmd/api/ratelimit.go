@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -19,7 +18,6 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if !ok {
-		log.Println("Too Many Requests For", ip)
 		app.tooManyRequests(w, r)
 		return
 	}
