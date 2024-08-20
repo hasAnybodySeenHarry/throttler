@@ -1,5 +1,5 @@
 apiVersion: v2
-name: expenses
+name: throttler
 description: A Helm chart for deploying the throttler services
 type: application
 version: 1.0.0

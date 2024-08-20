@@ -78,23 +78,18 @@ podDisruptionBudget:
   maxUnavailable: ""
 
 env:
-- name: DSN
+- name: ADDR
   valueFrom:
     secretKeyRef:
-      name: db-secrets
-      key: dsn
-- name: MAX-OPEN-CONN
+      name: redis-secrets
+      key: addr
+- name: PASSWORD
   valueFrom:
     secretKeyRef:
-      name: db-secrets
-      key: maxOpenConn
-- name: MAX-IDLE-CONN
+      name: redis-secrets
+      key: password
+- name: DB
   valueFrom:
     secretKeyRef:
-      name: db-secrets
-      key: maxIdleConn
-- name: AMQP_URI
-  valueFrom:
-    secretKeyRef:
-      name: rabbitmq-secrets
-      key: uri
+      name: redis-secrets
+      key: db

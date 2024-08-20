@@ -20,7 +20,7 @@ type rd struct {
 }
 
 func loadConfig(cfg *config) {
-	flag.IntVar(&cfg.port, "port", getEnvInt("PORT", 4000), "The port that the server listens at")
+	flag.IntVar(&cfg.port, "port", getEnvInt("PORT", 8080), "The port that the server listens at")
 	flag.StringVar(&cfg.env, "env", os.Getenv("ENV"), "The environment of the server")
 
 	flag.StringVar(&cfg.redis.addr, "addr", os.Getenv("ADDR"), "The environment of the server")
