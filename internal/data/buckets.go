@@ -26,7 +26,7 @@ func NewBucket() *Bucket {
 	}
 }
 
-func (m *BucketsModel) Allow(key string) (bool, error) {
+func (m *BucketsModel) Allow(key string, activated bool) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 

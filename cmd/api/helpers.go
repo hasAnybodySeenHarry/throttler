@@ -42,3 +42,10 @@ func getClientIP(r *http.Request) (string, error) {
 
 	return host, nil
 }
+
+func getRateLimitMessage(activated bool) string {
+	if !activated {
+		return "Consider activating your account for more quotas."
+	}
+	return ""
+}

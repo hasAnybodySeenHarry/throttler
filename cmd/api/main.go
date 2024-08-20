@@ -9,10 +9,11 @@ import (
 )
 
 type application struct {
-	config config
-	wg     sync.WaitGroup
-	logger *log.Logger
-	models data.Models
+	config  config
+	wg      sync.WaitGroup
+	logger  *log.Logger
+	models  data.Models
+	clients clients
 }
 
 func main() {
@@ -21,16 +22,18 @@ func main() {
 
 	l := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
-	client, err := initDependencies(cfg, l)
+	client, conn, err := initDependencies(cfg, l)
 	if err != nil {
 		l.Fatalln(err)
 	}
 	defer client.Close()
+	defer conn.Close()
 
 	app := application{
-		config: cfg,
-		logger: l,
-		models: data.New(client),
+		config:  cfg,
+		logger:  l,
+		models:  data.New(client),
+		clients: New(conn),
 	}
 
 	err = app.serve()

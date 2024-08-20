@@ -8,9 +8,10 @@ import (
 )
 
 type config struct {
-	port  int
-	env   string
-	redis rd
+	port     int
+	env      string
+	redis    rd
+	grpcAddr string
 }
 
 type rd struct {
@@ -20,6 +21,8 @@ type rd struct {
 }
 
 func loadConfig(cfg *config) {
+	flag.StringVar(&cfg.grpcAddr, "grpcAddr", os.Getenv("GRPC-ADDR"), "The address of the gRPC server")
+
 	flag.IntVar(&cfg.port, "port", getEnvInt("PORT", 8080), "The port that the server listens at")
 	flag.StringVar(&cfg.env, "env", os.Getenv("ENV"), "The environment of the server")
 
