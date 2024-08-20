@@ -11,7 +11,9 @@ func (app *application) routes() http.Handler {
 	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowed)
 	router.NotFound = http.HandlerFunc(app.notFound)
 
-	router.HandlerFunc(http.MethodGet, "/ratelimit", app.ratelimitHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.healthcheckHandler)
+
+	router.HandlerFunc(http.MethodGet, "/v1/ratelimit", app.ratelimitHandler)
 
 	return router
 }
