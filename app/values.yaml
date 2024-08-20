@@ -1,0 +1,100 @@
+service:
+  type: ClusterIP
+  port: 8080
+  internalPort: 8080
+
+redis:
+  addr: redis:6379
+  password: password
+  db: 0
+
+replicaCount: 1
+
+image:
+  registry: docker.io
+  repository: "demona9458/throttler"
+  tag: "latest"
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+serviceAccountName: default
+
+deploymentAnnotations: {}
+podAnnotations: {}
+
+podSecurityContext: {}
+
+serviceAccount:
+  create: false
+  name: ""
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  privileged: false
+  readOnlyRootFilesystem: false
+  runAsGroup: 1001
+  runAsNonRoot: true
+  runAsUser: 1001
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+livenessProbe:
+  path: /v1/healthcheck
+  port: 8080
+
+readinessProbe:
+  path: /v1/healthcheck
+  port: 8080
+
+startupProbe:
+  path: /v1/healthcheck
+  port: 8080
+
+topologySpreadConstraints: []
+
+extraEnv: []
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  maxUnavailable: ""
+
+env:
+- name: DSN
+  valueFrom:
+    secretKeyRef:
+      name: db-secrets
+      key: dsn
+- name: MAX-OPEN-CONN
+  valueFrom:
+    secretKeyRef:
+      name: db-secrets
+      key: maxOpenConn
+- name: MAX-IDLE-CONN
+  valueFrom:
+    secretKeyRef:
+      name: db-secrets
+      key: maxIdleConn
+- name: AMQP_URI
+  valueFrom:
+    secretKeyRef:
+      name: rabbitmq-secrets
+      key: uri

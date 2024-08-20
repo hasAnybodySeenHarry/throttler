@@ -1,0 +1,9 @@
+apiVersion: v2
+name: expenses
+description: A Helm chart for deploying the throttler services
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+home: https://github.com/hasAnybodySeenHarry/throttler
+sources:
+- https://github.com/hasAnybodySeenHarry/throttler
