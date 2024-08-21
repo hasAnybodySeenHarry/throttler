@@ -78,6 +78,8 @@ podDisruptionBudget:
   maxUnavailable: ""
 
 env:
+- name: GRPC-ADDR
+  value: ""
 - name: ADDR
   valueFrom:
     secretKeyRef:
