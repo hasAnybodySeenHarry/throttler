@@ -41,7 +41,7 @@ type Models struct {
 	Buckets BucketsModel
 }
 
-func New(client *redis.Client) Models {
+func NewModels(client *redis.Client) Models {
 	return Models{
 		Buckets: BucketsModel{
 			client: client,

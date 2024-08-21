@@ -47,3 +47,15 @@ func (app *application) invalidAuthToken(w http.ResponseWriter, r *http.Request)
 	w.Header().Set("WWW-Authenticate", "Bearer")
 	app.error(w, r, http.StatusUnauthorized, "invalid or missing authentication header")
 }
+
+func (app *application) invalidCredentials(w http.ResponseWriter, r *http.Request) {
+	app.error(w, r, http.StatusUnauthorized, "invalid credentials")
+}
+
+func (app *application) badGateway(w http.ResponseWriter, r *http.Request) {
+	app.error(w, r, http.StatusBadGateway, http.StatusText(http.StatusBadGateway))
+}
+
+func (app *application) gatewayTimeOut(w http.ResponseWriter, r *http.Request) {
+	app.error(w, r, http.StatusGatewayTimeout, http.StatusText(http.StatusGatewayTimeout))
+}

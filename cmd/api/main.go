@@ -13,7 +13,7 @@ type application struct {
 	wg      sync.WaitGroup
 	logger  *log.Logger
 	models  data.Models
-	clients clients
+	clients data.Clients
 }
 
 func main() {
@@ -32,8 +32,8 @@ func main() {
 	app := application{
 		config:  cfg,
 		logger:  l,
-		models:  data.New(client),
-		clients: New(conn),
+		models:  data.NewModels(client),
+		clients: data.NewClients(conn),
 	}
 
 	err = app.serve()
