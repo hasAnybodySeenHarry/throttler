@@ -45,7 +45,7 @@ func getClientIP(r *http.Request) (string, error) {
 
 func getRateLimitMessage(activated bool) string {
 	if !activated {
-		return "Consider activating your account for more quotas."
+		return "Rate limit exceeded. Consider activating your account for more quotas."
 	}
-	return ""
+	return "Rate limit exceeded. "
 }

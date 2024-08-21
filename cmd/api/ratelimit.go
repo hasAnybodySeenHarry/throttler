@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -41,7 +42,7 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 				return
 			}
 
-			key = segs[1]
+			key = strconv.FormatInt(user.Id, 10)
 		} else {
 			app.invalidAuthToken(w, r)
 			return

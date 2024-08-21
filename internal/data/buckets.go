@@ -18,7 +18,15 @@ type BucketsModel struct {
 	script *redis.Script
 }
 
-func NewBucket() *Bucket {
+func NewBucket(hasPrivileges bool) *Bucket {
+	if hasPrivileges {
+		return &Bucket{
+			bucketSize:   8,
+			refillRate:   1,
+			refillPeriod: 3 * time.Second,
+		}
+	}
+
 	return &Bucket{
 		bucketSize:   5,
 		refillRate:   1,
@@ -35,7 +43,7 @@ func (m *BucketsModel) Allow(key string, activated bool) (bool, error) {
 
 	now := time.Now().Unix()
 
-	b := NewBucket()
+	b := NewBucket(activated)
 
 	args := []interface{}{b.bucketSize, b.refillRate, b.refillPeriod.Seconds(), now}
 

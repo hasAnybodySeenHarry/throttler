@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 func (app *application) log(r *http.Request, err error) {
@@ -40,7 +39,7 @@ func (app *application) badRequest(w http.ResponseWriter, r *http.Request, err e
 }
 
 func (app *application) tooManyRequests(w http.ResponseWriter, r *http.Request, msg string) {
-	app.error(w, r, http.StatusTooManyRequests, envelope{"error": strings.Join([]string{"Ratelimit Exceeded", msg}, ". ")})
+	app.error(w, r, http.StatusTooManyRequests, envelope{"error": msg})
 }
 
 func (app *application) invalidAuthToken(w http.ResponseWriter, r *http.Request) {
