@@ -17,7 +17,6 @@ type config struct {
 type rd struct {
 	addr     string
 	password string
-	db       int
 }
 
 func loadConfig(cfg *config) {
@@ -28,7 +27,6 @@ func loadConfig(cfg *config) {
 
 	flag.StringVar(&cfg.redis.addr, "addr", os.Getenv("ADDR"), "The environment of the server")
 	flag.StringVar(&cfg.redis.password, "password", os.Getenv("PASSWORD"), "The environment of the server")
-	flag.IntVar(&cfg.redis.db, "db", getEnvInt("DB", 0), "The environment of the server")
 
 	flag.Parse()
 }

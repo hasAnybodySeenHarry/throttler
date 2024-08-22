@@ -35,17 +35,18 @@ func NewBucket(hasPrivileges bool) *Bucket {
 }
 
 func (m *BucketsModel) Allow(key string, activated bool) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	tokensKey := key + ":tokens"
 	timestampKey := key + ":timestamp"
 
 	now := time.Now().Unix()
+	expiration := 24 * 3600
 
 	b := NewBucket(activated)
 
-	args := []interface{}{b.bucketSize, b.refillRate, b.refillPeriod.Seconds(), now}
+	args := []interface{}{b.bucketSize, b.refillRate, b.refillPeriod.Seconds(), now, expiration}
 
 	result, err := m.script.Run(ctx, m.client, []string{tokensKey, timestampKey}, args...).Int64()
 	if err != nil {

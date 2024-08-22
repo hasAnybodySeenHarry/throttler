@@ -8,20 +8,29 @@ import (
 	"google.golang.org/grpc"
 )
 
-func initDependencies(cfg config, logger *log.Logger) (*redis.Client, *grpc.ClientConn, error) {
-	var client *redis.Client
-	var conn *grpc.ClientConn
-	var rdErr, grpcErr error
-
+func initDependencies(cfg config, logger *log.Logger) (buckets *redis.Client, users *redis.Client, conn *grpc.ClientConn, err error) {
+	var bucketsErr, usersErr, grpcErr error
 	var wg sync.WaitGroup
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 
-		client, rdErr = openRedis(&cfg.redis, 6)
-		if rdErr != nil {
-			logger.Printf("Failed to connect to Redis: %v", rdErr)
+		buckets, bucketsErr = openRedis(&cfg.redis, 0, 6)
+		if bucketsErr != nil {
+			logger.Printf("Failed to connect to Redis for buckets: %v", bucketsErr)
+		} else {
+			logger.Println("Successfully connected to Redis")
+		}
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		users, usersErr = openRedis(&cfg.redis, 1, 6)
+		if usersErr != nil {
+			logger.Printf("Failed to connect to Redis for users: %v", usersErr)
 		} else {
 			logger.Println("Successfully connected to Redis")
 		}
@@ -41,12 +50,15 @@ func initDependencies(cfg config, logger *log.Logger) (*redis.Client, *grpc.Clie
 
 	wg.Wait()
 
-	if rdErr != nil {
-		return nil, nil, rdErr
+	if bucketsErr != nil {
+		return nil, nil, nil, bucketsErr
+	}
+	if usersErr != nil {
+		return nil, nil, nil, usersErr
 	}
 	if grpcErr != nil {
-		return nil, nil, grpcErr
+		return nil, nil, nil, grpcErr
 	}
 
-	return client, conn, nil
+	return buckets, users, conn, nil
 }

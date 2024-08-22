@@ -12,8 +12,9 @@ const (
 		local bucket_size = tonumber(ARGV[1])
 		local refill_rate = tonumber(ARGV[2])
 		local refill_period = tonumber(ARGV[3])
-
 		local now = tonumber(ARGV[4])
+		local expiration = tonumber(ARGV[5])
+
 		local tokens = tonumber(redis.call("get", tokens_key))
 		local last_refill = tonumber(redis.call("get", timestamp_key))
 
@@ -28,8 +29,8 @@ const (
 
 		if tokens > 0 then
 			tokens = tokens - 1
-			redis.call("set", tokens_key, tokens)
-			redis.call("set", timestamp_key, now)
+			redis.call("set", tokens_key, tokens, "EX", expiration)
+        	redis.call("set", timestamp_key, now, "EX", expiration)
 			return 1
 		else
 			return 0
@@ -39,13 +40,17 @@ const (
 
 type Models struct {
 	Buckets BucketsModel
+	Users   UsersModel
 }
 
-func NewModels(client *redis.Client) Models {
+func NewModels(buckets, users *redis.Client) Models {
 	return Models{
 		Buckets: BucketsModel{
-			client: client,
+			client: buckets,
 			script: redis.NewScript(luaScript),
+		},
+		Users: UsersModel{
+			client: users,
 		},
 	}
 }

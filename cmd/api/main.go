@@ -22,17 +22,18 @@ func main() {
 
 	l := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
-	client, conn, err := initDependencies(cfg, l)
+	buckets, users, conn, err := initDependencies(cfg, l)
 	if err != nil {
 		l.Fatalln(err)
 	}
-	defer client.Close()
+	defer buckets.Close()
+	defer users.Close()
 	defer conn.Close()
 
 	app := application{
 		config:  cfg,
 		logger:  l,
-		models:  data.NewModels(client),
+		models:  data.NewModels(buckets, users),
 		clients: data.NewClients(conn),
 	}
 

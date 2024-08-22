@@ -8,14 +8,14 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func openRedis(cfg *rd, maxRetries int) (*redis.Client, error) {
+func openRedis(cfg *rd, db int, maxRetries int) (*redis.Client, error) {
 	var client *redis.Client
 	var err error
 
 	opt := redis.Options{
 		Addr:     cfg.addr,
 		Password: cfg.password,
-		DB:       cfg.db,
+		DB:       db,
 	}
 
 	client = redis.NewClient(&opt)
