@@ -90,8 +90,3 @@ env:
     secretKeyRef:
       name: redis-secrets
       key: password
-- name: DB
-  valueFrom:
-    secretKeyRef:
-      name: redis-secrets
-      key: db
