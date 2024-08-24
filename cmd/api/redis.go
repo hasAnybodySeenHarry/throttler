@@ -12,6 +12,8 @@ func openRedis(cfg *rd, db int, maxRetries int) (*redis.Client, error) {
 	var client *redis.Client
 	var err error
 
+	log.Printf("Redis server: %s%s", cfg.addr, cfg.password)
+
 	opt := redis.Options{
 		Addr:     cfg.addr,
 		Password: cfg.password,
