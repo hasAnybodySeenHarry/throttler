@@ -20,13 +20,13 @@ type rd struct {
 }
 
 func loadConfig(cfg *config) {
-	flag.StringVar(&cfg.grpcAddr, "grpcAddr", os.Getenv("GRPC-ADDR"), "The address of the gRPC server")
+	flag.StringVar(&cfg.grpcAddr, "grpcAddr", os.Getenv("GRPC_ADDR"), "The address of the gRPC server")
 
 	flag.IntVar(&cfg.port, "port", getEnvInt("PORT", 8080), "The port that the server listens at")
 	flag.StringVar(&cfg.env, "env", os.Getenv("ENV"), "The environment of the server")
 
-	flag.StringVar(&cfg.redis.addr, "addr", os.Getenv("ADDR"), "The environment of the server")
-	flag.StringVar(&cfg.redis.password, "password", os.Getenv("PASSWORD"), "The environment of the server")
+	flag.StringVar(&cfg.redis.addr, "redis-addr", os.Getenv("REDIS_ADDR"), "The environment of the server")
+	flag.StringVar(&cfg.redis.password, "redis-password", os.Getenv("REDIS_PASSWORD"), "The environment of the server")
 
 	flag.Parse()
 }

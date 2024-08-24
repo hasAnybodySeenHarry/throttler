@@ -3,11 +3,6 @@ service:
   port: 8080
   internalPort: 8080
 
-redis:
-  addr: redis:6379
-  password: password
-  db: 0
-
 replicaCount: 1
 
 image:
@@ -78,14 +73,18 @@ podDisruptionBudget:
   maxUnavailable: ""
 
 env:
-- name: GRPC-ADDR
+- name: GRPC_ADDR
   value: ""
-- name: ADDR
+- name: ENV
+  value: "development"
+- name: PORT
+  value: 8080
+- name: REDIS_ADDR
   valueFrom:
     secretKeyRef:
       name: redis-secrets
       key: addr
-- name: PASSWORD
+- name: REDIS_PASSWORD
   valueFrom:
     secretKeyRef:
       name: redis-secrets
