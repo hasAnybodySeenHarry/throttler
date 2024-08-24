@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"harry2an.com/throttler/cmd/proto/users"
 )
 
@@ -68,25 +66,6 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"status": true}, nil)
 	if err != nil {
-		app.serverError(w, r, err)
-	}
-}
-
-func (app *application) handleGRPCError(w http.ResponseWriter, r *http.Request, err error) {
-	if st, ok := status.FromError(err); ok {
-		switch st.Code() {
-		case codes.InvalidArgument:
-			app.invalidAuthToken(w, r)
-		case codes.Unauthenticated:
-			app.invalidCredentials(w, r)
-		case codes.Internal:
-			app.badGateway(w, r)
-		case codes.DeadlineExceeded:
-			app.gatewayTimeOut(w, r)
-		default:
-			app.serverError(w, r, err)
-		}
-	} else {
 		app.serverError(w, r, err)
 	}
 }

@@ -47,5 +47,5 @@ func getRateLimitMessage(activated bool) string {
 	if !activated {
 		return "Rate limit exceeded. Consider activating your account for more quotas."
 	}
-	return "Rate limit exceeded. "
+	return "Rate limit exceeded."
 }
