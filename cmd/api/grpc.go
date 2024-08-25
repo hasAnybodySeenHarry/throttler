@@ -9,7 +9,7 @@ import (
 
 func openGRPC(addr string) (*grpc.ClientConn, error) {
 	if addr == "" {
-		addr = "development-expenses"
+		addr = "expenses"
 	}
 	server := fmt.Sprintf("%s:50051", addr)
 	conn, err := grpc.NewClient(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
