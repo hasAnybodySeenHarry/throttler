@@ -4,7 +4,9 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
+	"github.com/sony/gobreaker"
 	"harry2an.com/throttler/internal/data"
 )
 
@@ -14,6 +16,7 @@ type application struct {
 	logger  *log.Logger
 	models  data.Models
 	clients data.Clients
+	cb      *gobreaker.CircuitBreaker
 }
 
 func main() {
@@ -30,11 +33,23 @@ func main() {
 	defer users.Close()
 	defer conn.Close()
 
+	settings := gobreaker.Settings{
+		Name:        "UserClient",
+		MaxRequests: 10,
+		Interval:    10 * time.Second,
+		Timeout:     5 * time.Second,
+		ReadyToTrip: func(counts gobreaker.Counts) bool {
+			return counts.ConsecutiveFailures > 5
+		},
+	}
+	cb := gobreaker.NewCircuitBreaker(settings)
+
 	app := application{
 		config:  cfg,
 		logger:  l,
 		models:  data.NewModels(buckets, users),
 		clients: data.NewClients(conn),
+		cb:      cb,
 	}
 
 	err = app.serve()

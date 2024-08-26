@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/sony/gobreaker"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -79,4 +81,8 @@ func (app *application) handleGRPCError(w http.ResponseWriter, r *http.Request, 
 	} else {
 		app.serverError(w, r, err)
 	}
+}
+
+func isCircuitBreakerError(err error) bool {
+	return errors.Is(err, gobreaker.ErrOpenState) || errors.Is(err, gobreaker.ErrTooManyRequests)
 }

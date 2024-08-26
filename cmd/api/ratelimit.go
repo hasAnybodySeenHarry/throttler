@@ -26,11 +26,18 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 			if id, err := app.models.Users.GetUserIDByToken(token); err == nil && id != "" {
 				key = id
 			} else {
-				user, err = app.getUserForToken(token)
+				result, err := app.cb.Execute(func() (interface{}, error) {
+					return app.getUserForToken(token)
+				})
 				if err != nil {
-					app.handleGRPCError(w, r, err)
+					if isCircuitBreakerError(err) {
+						app.badGateway(w, r)
+					} else {
+						app.handleGRPCError(w, r, err)
+					}
 					return
 				}
+				user = result.(*users.GetUserResponse)
 
 				userID := strconv.FormatInt(user.Id, 10)
 
