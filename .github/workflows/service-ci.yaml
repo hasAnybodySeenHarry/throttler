@@ -90,13 +90,15 @@ jobs:
     - name: Create image name
       id: container-image
       run: |
-        BRANCH_NAME=$(echo "${{ github.ref }}" | sed 's/\//_/g')
-        IMAGE_NAME=${BRANCH_NAME}_${{ github.ref_name }}
+        BRANCH_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//_/g')
+        IMAGE_NAME=${BRANCH_NAME}_${{ github.sha }}
         echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
   containerize:
     runs-on: ubuntu-latest
     needs: [unit-tests, static-analysis, validate-helm, repo-meta]
+    outputs:
+      image_digest: ${{ steps.image-digest.outputs.IMAGE_DIGEST }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -125,36 +127,62 @@ jobs:
 
   package-helm:
     runs-on: ubuntu-latest
-    needs: [unit-tests, static-analysis, validate-helm]
+    needs: [unit-tests, static-analysis, validate-helm, containerize]
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Package Chart
-      run: |
-        helm package ${{ env.HELM_FOLDER }} --destination charts
-        helm repo index charts --url ${{ vars.HELM_REPO_URL }}
+    - name: Setup yq tools
+      uses: mikefarah/yq@v4.35.2
 
-    - name: Commit and push
+    - name: Update helm files
       run: |
+        CHART_VERSION="$(cat VERSION_HELM)"
+        APP_VERSION="$(cat VERSION)"
+        HELM_FOLDER=${{ env.HELM_FOLDER }}
+        RUN_NUMBER=${{ github.run_number }}
+
+        REPO_NAME=${{ needs.repo-meta.outputs.repo_name }}
+        IMAGE_NAME=${{ needs.repo-meta.outputs.image_name }}
+        IMAGE_DIGEST=${{ needs.containerize.outputs.image_digest }}
+        DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+
+        yq eval -i ".version = \"${CHART_VERSION}.${RUN_NUMBER}\"" "./${HELM_FOLDER}/Chart.yaml"
+        yq eval -i ".appVersion = \"${APP_VERSION}\"" "./${HELM_FOLDER}/Chart.yaml"
+
+        yq eval -i ".image.repository = \"${DOCKERHUB_USERNAME}/${REPO_NAME}\"" "./${HELM_FOLDER}/values.yaml"
+        yq eval -i ".image.tag = \"${IMAGE_NAME}@${IMAGE_DIGEST}\"" "./${HELM_FOLDER}/values.yaml"
+
+    - name: Setup Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: ${{ env.HELM_VERSION }}
+
+    - name: Package Helm chart
+      run: |
+        helm package ./${{ env.HELM_FOLDER }}
+        helm repo index ./${{ env.HELM_FOLDER }} --url ${{ secrets.HELM_REPO_URL }}
+
+    - name: Clone Helm repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
+        ref: ${{ secrets.HELM_REPO_TARGET }}
+        token: ${{ secrets.HELM_REPO_PAT }}
+        path: ./${{ secrets.HELM_REPO_NAME }}
+
+    - name: Replace helm packages
+      run: |
+        APP_FOLDER="./${{ secrets.HELM_REPO_NAME }}/app/${{ needs.repo-meta.outputs.repo_name }}"
+        mkdir -p ${APP_FOLDER}
+        cp *.tgz ${APP_FOLDER}/
+
+    - name: Push Helm packages
+      run: |
+        cd ${{ secrets.HELM_REPO_NAME }}
         git config user.name "${GITHUB_ACTOR}"
         git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-
-        if [[ $(git status --porcelain) ]]; then
-          if ! git add .; then
-            echo "Error: Failed to stage files"
-          fi
-
-          if ! git commit -m "Updated from ref: ${{ github.sha }}"; then
-            echo "Error: Failed to commit files"
-          fi
-
-          if ! git push; then
-            if ! git pull --rebase && git push; then
-              echo "Error: failed to push the code."
-              exit 1
-            fi
-          fi
-        else
-          echo "Nothing to commit."
-        fi
+        git pull origin ${{ secrets.HELM_REPO_TARGET }}
+        git add .
+        git commit -m "${{ github.ref_name }}"
+        git push origin ${{ secrets.HELM_REPO_TARGET }}
