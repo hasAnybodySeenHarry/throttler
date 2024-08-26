@@ -78,7 +78,7 @@ env:
 - name: ENV
   value: "development"
 - name: PORT
-  value: 8080
+  value: "8080"
 - name: REDIS_ADDR
   valueFrom:
     secretKeyRef:
