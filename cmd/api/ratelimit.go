@@ -17,6 +17,7 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 	var key string
 	var err error
 	var user *users.GetUserResponse
+	var activated bool
 
 	if auth := r.Header.Get(Authorization); auth != "" {
 		segs := strings.Split(auth, " ")
@@ -31,24 +32,35 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 				})
 				if err != nil {
 					if isCircuitBreakerError(err) {
-						app.badGateway(w, r)
+						// fallback in case of circuit breaker is opened
+						key, err = getClientIP(r)
+						if err != nil {
+							app.badRequest(w, r, err)
+							return
+						}
 					} else {
 						app.handleGRPCError(w, r, err)
+						return
 					}
-					return
+				} else {
+					user = result.(*users.GetUserResponse)
+
+					userID := strconv.FormatInt(user.Id, 10)
+
+					err = app.models.Users.InsertTokenWithID(token, userID)
+					if err != nil {
+						app.serverError(w, r, err)
+						return
+					}
+
+					key = userID
 				}
-				user = result.(*users.GetUserResponse)
-
-				userID := strconv.FormatInt(user.Id, 10)
-
-				err = app.models.Users.InsertTokenWithID(token, userID)
-				if err != nil {
-					app.serverError(w, r, err)
-					return
-				}
-
-				key = userID
 			}
+
+			if user != nil {
+				activated = user.Activated
+			}
+
 		} else {
 			app.invalidAuthToken(w, r)
 			return
@@ -60,8 +72,6 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 			return
 		}
 	}
-
-	activated := user != nil && user.Activated
 
 	if ok, err := app.models.Buckets.Allow(key, activated); err != nil {
 		app.serverError(w, r, err)
