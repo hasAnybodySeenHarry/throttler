@@ -11,12 +11,11 @@ on:
     path-ignore:
     - 'migrations/**'
     - 'remote/**'
-    - 'charts/**'
 
 env:
   GO_VERSION: '1.22'
   HELM_VERSION: 'v3.13.3'
-  HELM_FOLDER: ./app
+  HELM_FOLDER: app
 
 jobs:
   unit-tests:
@@ -70,7 +69,7 @@ jobs:
 
     - name: Lint Helm Chart
       run: |
-        helm lint ${{ env.HELM_FOLDER }}
+        helm lint ./${{ env.HELM_FOLDER }}
 
   repo-meta:
     runs-on: ubuntu-latest
@@ -153,6 +152,8 @@ jobs:
         yq eval -i ".image.repository = \"${DOCKERHUB_USERNAME}/${REPO_NAME}\"" "./${HELM_FOLDER}/values.yaml"
         yq eval -i ".image.tag = \"${IMAGE_NAME}@${IMAGE_DIGEST}\"" "./${HELM_FOLDER}/values.yaml"
 
+        helm lint ./${HELM_FOLDER}
+
     - name: Setup Helm
       uses: azure/setup-helm@v3
       with:
@@ -173,7 +174,7 @@ jobs:
 
     - name: Replace helm packages
       run: |
-        APP_FOLDER="./${{ secrets.HELM_REPO_NAME }}/app/${{ needs.repo-meta.outputs.repo_name }}"
+        APP_FOLDER="./${{ secrets.HELM_REPO_NAME }}/${{ env.HELM_FOLDER }}/${{ needs.repo-meta.outputs.repo_name }}"
         mkdir -p ${APP_FOLDER}
         cp *.tgz ${APP_FOLDER}/
 
