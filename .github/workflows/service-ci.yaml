@@ -140,7 +140,6 @@ jobs:
         APP_VERSION="$(cat VERSION)"
         HELM_FOLDER=${{ env.HELM_FOLDER }}
         RUN_NUMBER=${{ github.run_number }}
-
         REPO_NAME=${{ needs.repo-meta.outputs.repo_name }}
         IMAGE_NAME=${{ needs.repo-meta.outputs.image_name }}
         IMAGE_DIGEST=${{ needs.containerize.outputs.image_digest }}
