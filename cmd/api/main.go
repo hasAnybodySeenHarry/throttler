@@ -8,6 +8,7 @@ import (
 
 	"github.com/sony/gobreaker"
 	"harry2an.com/throttler/internal/data"
+	"harry2an.com/throttler/internal/metrics"
 )
 
 type application struct {
@@ -17,6 +18,7 @@ type application struct {
 	models  data.Models
 	clients data.Clients
 	cb      *gobreaker.CircuitBreaker
+	metrics *metrics.Metrics
 }
 
 func main() {
@@ -50,6 +52,7 @@ func main() {
 		models:  data.NewModels(buckets, users),
 		clients: data.NewClients(conn),
 		cb:      cb,
+		metrics: metrics.Register(),
 	}
 
 	err = app.serve()
