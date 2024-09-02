@@ -33,7 +33,7 @@ spec:
   - type: Pods
     pods:
       metric:
-        name: http_requests_total
+        name: total_http_requests
       target:
         type: AverageValue
         averageValue: {{ .Values.autoscaling.averageTotalHTTPRequests }}
