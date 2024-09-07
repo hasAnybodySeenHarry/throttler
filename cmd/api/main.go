@@ -9,6 +9,7 @@ import (
 	"github.com/sony/gobreaker"
 	"harry2an.com/throttler/internal/data"
 	"harry2an.com/throttler/internal/metrics"
+	"harry2an.com/throttler/internal/rpc"
 )
 
 type application struct {
@@ -16,7 +17,7 @@ type application struct {
 	wg      sync.WaitGroup
 	logger  *log.Logger
 	models  data.Models
-	clients data.Clients
+	clients rpc.Clients
 	cb      *gobreaker.CircuitBreaker
 	metrics *metrics.Metrics
 }
@@ -50,7 +51,7 @@ func main() {
 		config:  cfg,
 		logger:  l,
 		models:  data.NewModels(buckets, users),
-		clients: data.NewClients(conn),
+		clients: rpc.NewClients(conn),
 		cb:      cb,
 		metrics: metrics.Register(),
 	}

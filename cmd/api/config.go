@@ -25,8 +25,8 @@ func loadConfig(cfg *config) {
 	flag.IntVar(&cfg.port, "port", getEnvInt("PORT", 8080), "The port that the server listens at")
 	flag.StringVar(&cfg.env, "env", os.Getenv("ENV"), "The environment of the server")
 
-	flag.StringVar(&cfg.redis.addr, "redis-addr", os.Getenv("REDIS_ADDR"), "The environment of the server")
-	flag.StringVar(&cfg.redis.password, "redis-password", os.Getenv("REDIS_PASSWORD"), "The environment of the server")
+	flag.StringVar(&cfg.redis.addr, "redis-addr", os.Getenv("REDIS_ADDR"), "The environment of the redis database")
+	flag.StringVar(&cfg.redis.password, "redis-password", os.Getenv("REDIS_PASSWORD"), "The environment of the redis database")
 
 	flag.Parse()
 }
