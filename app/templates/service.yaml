@@ -15,4 +15,5 @@ spec:
     protocol: TCP
   selector:
     {{- include "app.selectorLabels" $original | nindent 4 }}
+---
 {{- end }}
