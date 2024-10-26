@@ -13,12 +13,31 @@ spec:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
   strategy:
-    blueGreen:
-      activeService: {{ include "app.fullname" . }}-active
-      previewService: {{ include "app.fullname" . }}-preview
-      autoPromotionEnabled: {{ .Values.autoPromotionEnabled | default false }}
-      previewReplicaCount: {{ .Values.previewReplicaCount | default 2 }}
-      scaleDownDelaySeconds: {{ .Values.scaleDownDelaySeconds | default 30 }}
+    canary:
+      canaryService: {{ include "app.fullname" . }}-preview
+      stableService: {{ include "app.fullname" . }}-active
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayAPI:
+            httpRoute: {{ include "app.fullname" . }}-rollouts-http-route
+            namespace: default
+      steps:
+      - setWeight: 30
+      - pause: {}
+      - setWeight: 40
+      - pause: { duration: 10 }
+      - setWeight: 60
+      - pause: { duration: 10 }
+      - setWeight: 80
+      - pause: { duration: 10 }
+      - pause: {}
+
+    # blueGreen:
+    #   activeService: {{ include "app.fullname" . }}-active
+    #   previewService: {{ include "app.fullname" . }}-preview
+    #   autoPromotionEnabled: {{ .Values.autoPromotionEnabled | default false }}
+    #   previewReplicaCount: {{ .Values.previewReplicaCount | default 2 }}
+    #   scaleDownDelaySeconds: {{ .Values.scaleDownDelaySeconds | default 30 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
