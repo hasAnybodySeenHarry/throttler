@@ -7,7 +7,7 @@ import (
 
 func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 	data := envelope{
-		"status": true,
+		"status": false,
 		"time":   time.Now(),
 	}
 

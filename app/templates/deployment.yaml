@@ -16,7 +16,7 @@ spec:
       activeService: {{ include "app.fullname" . }}-active
       previewService: {{ include "app.fullname" . }}-preview
       autoPromotionEnabled: {{ .Values.autoPromotionEnabled | default false }}
-      previewReplicaCount: {{ .Values.previewReplicaCount | default 1 }}
+      previewReplicaCount: {{ .Values.previewReplicaCount | default 2 }}
       scaleDownDelaySeconds: {{ .Values.scaleDownDelaySeconds | default 30 }}
   template:
     metadata:
