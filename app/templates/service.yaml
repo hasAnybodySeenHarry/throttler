@@ -1,17 +1,18 @@
+{{- $original := . }}
 {{- range $suffix := list "active" "preview" }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "app.fullname" . }}-{{ $suffix }}
+  name: {{ include "app.fullname" $original }}-{{ $suffix }}
   labels:
-    {{- include "app.labels" . | nindent 4 }}
+    {{- include "app.labels" $original | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $original.Values.service.type }}
   ports:
   - name: http
-    port: {{ .Values.service.port }}
-    targetPort: {{ .Values.service.internalPort | default "http" }}
+    port: {{ $original.Values.service.port }}
+    targetPort: {{ $original.Values.service.internalPort | default "http" }}
     protocol: TCP
   selector:
-    {{- include "app.selectorLabels" . | nindent 4 }}
+    {{- include "app.selectorLabels" $original | nindent 4 }}
 {{- end }}
