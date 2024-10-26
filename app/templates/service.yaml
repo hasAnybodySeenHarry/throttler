@@ -1,7 +1,8 @@
+{{- range $suffix := list "active" "preview" }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "app.fullname" . }}
+  name: {{ include "app.fullname" . }}-{{ $suffix }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
@@ -13,3 +14,4 @@ spec:
     protocol: TCP
   selector:
     {{- include "app.selectorLabels" . | nindent 4 }}
+{{- end }}
