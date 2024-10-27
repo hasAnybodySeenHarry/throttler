@@ -37,6 +37,16 @@ spec:
           templates:
           - templateName: {{ include "app.fullname" . }}-analysis
       - setWeight: 100
+      canaryMetadata:
+        annotations:
+          role: preview
+        labels:
+          role: preview
+      stableMetadata:
+        annotations:
+          role: active
+        labels:
+          role: active
   template:
     metadata:
       {{- with .Values.podAnnotations }}
