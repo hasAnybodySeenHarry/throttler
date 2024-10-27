@@ -16,7 +16,4 @@ spec:
       prometheus:
         address: http://prometheus.linkerd-viz.svc.cluster.local:9090
         query: |
-          ((sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview", http_status=~"200"}[5m])) / 
-          sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m]))) * 100) + 
-          ((sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview", http_status=~"4.."}[5m])) / 
-          sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m]))) * 100)
+          (sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview", http_status=~"200"}[5m])) / sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m])) * 100) + ((sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview", http_status=~”4..”}[5m])) or sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m]))) / sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m])) * 100)

@@ -32,7 +32,10 @@ spec:
       - pause: { duration: 10 }
       - setWeight: 80
       - pause: { duration: 10 }
-      - pause: {}
+      - analysis:
+          templates:
+          - {{ include "app.fullname" . }}-analysis
+      - setWeight: 100
   template:
     metadata:
       {{- with .Values.podAnnotations }}
