@@ -23,9 +23,10 @@ spec:
             namespace: default
       steps:
       - setWeight: 30
+      - pause: { duration: 10 }
       - analysis:
           templates:
-          - {{ include "app.fullname" . }}-analysis
+          - templateName: {{ include "app.fullname" . }}-analysis
       - setWeight: 40
       - pause: { duration: 10 }
       - setWeight: 60
@@ -34,7 +35,7 @@ spec:
       - pause: { duration: 10 }
       - analysis:
           templates:
-          - {{ include "app.fullname" . }}-analysis
+          - templateName: {{ include "app.fullname" . }}-analysis
       - setWeight: 100
   template:
     metadata:
