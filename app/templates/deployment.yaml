@@ -23,7 +23,9 @@ spec:
             namespace: default
       steps:
       - setWeight: 30
-      - pause: {}
+      - analysis:
+          templates:
+          - {{ include "app.fullname" . }}-analysis
       - setWeight: 40
       - pause: { duration: 10 }
       - setWeight: 60
@@ -31,12 +33,6 @@ spec:
       - setWeight: 80
       - pause: { duration: 10 }
       - pause: {}
-    # blueGreen:
-    #   activeService: {{ include "app.fullname" . }}-active
-    #   previewService: {{ include "app.fullname" . }}-preview
-    #   autoPromotionEnabled: {{ .Values.autoPromotionEnabled | default false }}
-    #   previewReplicaCount: {{ .Values.previewReplicaCount | default 2 }}
-    #   scaleDownDelaySeconds: {{ .Values.scaleDownDelaySeconds | default 30 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}

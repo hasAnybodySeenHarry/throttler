@@ -1,5 +1,12 @@
 namespace: default
 
+analysis:
+  successRate:
+    interval: 1m
+    successCondition: result[0] >= 95
+    failureLimit: 3
+    count: 3
+
 httpPort: 8080
 
 service:
