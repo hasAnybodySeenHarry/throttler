@@ -1,17 +1,21 @@
+{{- $original := . }}
+{{- range $suffix := list "active" "preview" }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "app.fullname" . }}-metrics
+  name: {{ include "app.fullname" $original }}-{{ $suffix }}-metrics
   namespace: default
   labels:
     release: prometheus
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "app.fullname" . }}
+      app.kubernetes.io/name: {{ include "app.fullname" $original }}-{{ $suffix }}
   namespaceSelector:
     matchNames:
     - default
   endpoints:
   - port: http
     interval: 15s
+---
+{{- end }}
