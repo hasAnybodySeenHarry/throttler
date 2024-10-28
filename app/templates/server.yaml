@@ -1,0 +1,11 @@
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: {{ include "app.fullname" . }}-server
+  namespace: {{ .Values.namespace }}
+spec:
+  accessPolicy: all-authenticated
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "app.fullname" . }}
+  port: http

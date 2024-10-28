@@ -20,7 +20,7 @@ spec:
         plugins:
           argoproj-labs/gatewayAPI:
             httpRoute: {{ include "app.fullname" . }}-rollouts-http-route
-            namespace: default
+            namespace: {{ .Values.namespace }}
       steps:
       - setWeight: 30
       - pause: { duration: 10 }

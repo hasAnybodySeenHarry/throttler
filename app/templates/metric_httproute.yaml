@@ -1,0 +1,16 @@
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: {{ include "app.fullname" . }}-metric-route
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+  - name: {{ include "app.fullname" . }}-server
+    kind: Server
+    group: policy.linkerd.io
+  rules:
+  - matches:
+    - path:
+        value: "/metrics"
+        type: "Exact"
+      method: GET

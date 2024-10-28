@@ -1,0 +1,14 @@
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "app.fullname" . }}-metric-policy
+  namespace: {{ .Values.namespace }}
+spec:
+  targetRef:
+    group: policy.linkerd.io
+    kind: HTTPRoute
+    name: {{ include "app.fullname" . }}-metric-route
+  requiredAuthenticationRefs:
+  - name: {{ include "app.fullname" . }}-metric-authn
+    kind: MeshTLSAuthentication
+    group: policy.linkerd.io

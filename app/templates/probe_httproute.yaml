@@ -1,0 +1,16 @@
+apiVersion: policy.linkerd.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: {{ include "app.fullname" . }}-probe-route
+  namespace: {{ .Values.namespace }}
+spec:
+  parentRefs:
+  - name: {{ include "app.fullname" . }}-server
+    kind: Server
+    group: policy.linkerd.io
+  rules:
+  - matches:
+    - path:
+        value: {{ .Values.livenessProbe.path }}
+        type: "Exact"
+      method: GET
