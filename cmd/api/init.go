@@ -17,7 +17,7 @@ func initDependencies(cfg config, logger *jsonlog.Logger) (buckets *redis.Client
 	go func() {
 		defer wg.Done()
 
-		buckets, bucketsErr = openRedis(&cfg.redis, 0, 6)
+		buckets, bucketsErr = openRedis(logger, &cfg.redis, 0, 6)
 		if bucketsErr != nil {
 			logger.Error(fmt.Errorf("failed to connect to Redis for buckets: %v", bucketsErr), nil)
 		} else {
@@ -29,7 +29,7 @@ func initDependencies(cfg config, logger *jsonlog.Logger) (buckets *redis.Client
 	go func() {
 		defer wg.Done()
 
-		users, usersErr = openRedis(&cfg.redis, 1, 6)
+		users, usersErr = openRedis(logger, &cfg.redis, 1, 6)
 		if usersErr != nil {
 			logger.Error(fmt.Errorf("failed to connect to Redis for users: %v", usersErr), nil)
 		} else {

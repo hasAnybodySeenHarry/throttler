@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"harry2an.com/throttler/internal/jsonlog"
 )
 
-func openRedis(cfg *rd, db int, maxRetries int) (*redis.Client, error) {
+func openRedis(logger *jsonlog.Logger, cfg *rd, db int, maxRetries int) (*redis.Client, error) {
 	var client *redis.Client
 	var err error
 
@@ -30,7 +30,9 @@ func openRedis(cfg *rd, db int, maxRetries int) (*redis.Client, error) {
 			return client, nil
 		}
 
-		log.Printf("Failed to connect to Redis: %v. Retrying in 5 seconds...", err)
+		logger.Error(err, map[string]string{
+			"message": "Failed to connect to Redis. Retrying in 5 seconds",
+		})
 		time.Sleep(5 * time.Second)
 	}
 
