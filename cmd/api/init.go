@@ -1,14 +1,15 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"sync"
 
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
+	"harry2an.com/throttler/internal/jsonlog"
 )
 
-func initDependencies(cfg config, logger *log.Logger) (buckets *redis.Client, users *redis.Client, conn *grpc.ClientConn, err error) {
+func initDependencies(cfg config, logger *jsonlog.Logger) (buckets *redis.Client, users *redis.Client, conn *grpc.ClientConn, err error) {
 	var bucketsErr, usersErr, grpcErr error
 	var wg sync.WaitGroup
 
@@ -18,9 +19,9 @@ func initDependencies(cfg config, logger *log.Logger) (buckets *redis.Client, us
 
 		buckets, bucketsErr = openRedis(&cfg.redis, 0, 6)
 		if bucketsErr != nil {
-			logger.Printf("Failed to connect to Redis for buckets: %v", bucketsErr)
+			logger.Error(fmt.Errorf("failed to connect to Redis for buckets: %v", bucketsErr), nil)
 		} else {
-			logger.Println("Successfully connected to Redis")
+			logger.Info("Successfully connected to Redis", nil)
 		}
 	}()
 
@@ -30,9 +31,9 @@ func initDependencies(cfg config, logger *log.Logger) (buckets *redis.Client, us
 
 		users, usersErr = openRedis(&cfg.redis, 1, 6)
 		if usersErr != nil {
-			logger.Printf("Failed to connect to Redis for users: %v", usersErr)
+			logger.Error(fmt.Errorf("failed to connect to Redis for users: %v", usersErr), nil)
 		} else {
-			logger.Println("Successfully connected to Redis")
+			logger.Info("Successfully connected to Redis", nil)
 		}
 	}()
 
@@ -42,9 +43,9 @@ func initDependencies(cfg config, logger *log.Logger) (buckets *redis.Client, us
 
 		conn, grpcErr = openGRPC(cfg.grpcAddr)
 		if grpcErr != nil {
-			log.Printf("Failed to connect to the gRPC server: %v", grpcErr)
+			logger.Error(fmt.Errorf("failed to connect to the gRPC server: %v", grpcErr), nil)
 		} else {
-			logger.Println("Successfully connected to the gRPC server")
+			logger.Info("Successfully connected to the gRPC server", nil)
 		}
 	}()
 

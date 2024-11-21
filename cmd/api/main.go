@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
 	"os"
 	"sync"
 	"time"
 
 	"github.com/sony/gobreaker"
 	"harry2an.com/throttler/internal/data"
+	"harry2an.com/throttler/internal/jsonlog"
 	"harry2an.com/throttler/internal/metrics"
 	"harry2an.com/throttler/internal/rpc"
 )
@@ -15,7 +15,7 @@ import (
 type application struct {
 	config  config
 	wg      sync.WaitGroup
-	logger  *log.Logger
+	logger  *jsonlog.Logger
 	models  data.Models
 	clients rpc.Clients
 	cb      *gobreaker.CircuitBreaker
@@ -26,11 +26,11 @@ func main() {
 	var cfg config
 	loadConfig(&cfg)
 
-	l := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	l := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	buckets, users, conn, err := initDependencies(cfg, l)
 	if err != nil {
-		l.Fatalln(err)
+		l.Fatal(err, nil)
 	}
 	defer buckets.Close()
 	defer users.Close()
@@ -58,6 +58,6 @@ func main() {
 
 	err = app.serve()
 	if err != nil {
-		app.logger.Fatal(err)
+		app.logger.Fatal(err, nil)
 	}
 }

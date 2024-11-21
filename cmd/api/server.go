@@ -20,7 +20,7 @@ func (app *application) serve() error {
 		Handler:      app.routes(),
 	}
 
-	app.logger.Println("Server is starting")
+	app.logger.Info("Server is starting", nil)
 
 	shutdownErr := make(chan error, 1)
 	go func() {
@@ -28,7 +28,9 @@ func (app *application) serve() error {
 		signal.Notify(relay, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 		s := <-relay
-		app.logger.Println("Received signal:", s.String())
+		app.logger.Info("Received signal:", map[string]string{
+			"sig": s.String(),
+		})
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -38,7 +40,7 @@ func (app *application) serve() error {
 			shutdownErr <- err
 		}
 
-		app.logger.Println("Starting to clean up goroutines")
+		app.logger.Info("Starting to clean up goroutines", nil)
 
 		app.wg.Wait()
 		shutdownErr <- err
@@ -48,15 +50,15 @@ func (app *application) serve() error {
 	if !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
-	app.logger.Println("The server has just stopped now")
+	app.logger.Info("The server has just stopped now", nil)
 
 	err = <-shutdownErr
 	if err != nil {
-		app.logger.Println(err)
+		app.logger.Error(err, nil)
 		return err
 	}
 
-	app.logger.Println("The server has completely stopped")
+	app.logger.Info("The server has completely stopped", nil)
 
 	return nil
 }

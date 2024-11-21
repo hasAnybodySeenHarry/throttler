@@ -11,7 +11,9 @@ import (
 )
 
 func (app *application) log(r *http.Request, err error) {
-	app.logger.Println(err, "at", r.URL.String())
+	app.logger.Info(err.Error(), map[string]string{
+		"path": r.URL.String(),
+	})
 }
 
 func (app *application) error(w http.ResponseWriter, r *http.Request, status int, msg any) {
