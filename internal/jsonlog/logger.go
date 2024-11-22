@@ -50,11 +50,11 @@ func (l *Logger) print(level Level, message string, props map[string]string) (in
 	}
 
 	aux := struct {
-		Level      string
-		Message    string
-		Properties map[string]string
-		Time       string
-		Trace      string
+		Level      string            `json:"level"`
+		Message    string            `json:"message"`
+		Properties map[string]string `json:"properties"`
+		Time       string            `json:"time"`
+		Trace      string            `json:"trace,omitempty"`
 	}{
 		Level:      level.String(),
 		Message:    message,
@@ -67,7 +67,7 @@ func (l *Logger) print(level Level, message string, props map[string]string) (in
 	}
 
 	var line []byte
-	line, err := json.MarshalIndent(&aux, "", " ")
+	line, err := json.Marshal(&aux)
 	if err != nil {
 		line = []byte(level.String() + ": unable to marshal the message " + err.Error())
 	}
