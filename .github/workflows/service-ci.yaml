@@ -201,6 +201,7 @@ jobs:
           cd ${{ secrets.HELM_REPO_NAME }}
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
           git pull origin ${{ secrets.HELM_REPO_TARGET }}
           git add .
           git commit -m "${{ github.ref_name }}"
