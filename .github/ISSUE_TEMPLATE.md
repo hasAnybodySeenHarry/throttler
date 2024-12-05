@@ -1,6 +1,6 @@
 ---
 title: Someone just pushed
-assignees: JasonEtco, matchai
+# assignees: JasonEtco, matchai
 labels: bug, enhancement
 ---
 
