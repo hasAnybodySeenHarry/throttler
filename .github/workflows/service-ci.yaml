@@ -17,5 +17,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_HASH: ${{ github.sha }}
+          OWNER: ${{ github.repository_owner }}
+          REPOSITORY: ${{ github.repository }}
         with:
           assignees: ${{ github.actor }}
+          filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
