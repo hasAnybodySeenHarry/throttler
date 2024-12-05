@@ -1,6 +1,6 @@
 ---
 title: Unit Testing failed
-assignees: "${{ payload.sender.login }}"
+assignees: ${{ payload.sender.login }}
 labels: bug
 ---
 
