@@ -49,12 +49,6 @@ jobs:
           assignees: ${{ github.actor }}
           filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
 
-      - name: Exit with error to cancel dependent jobs
-        if: failure()
-        run: |
-          echo "Unit tests failed. Exiting with error."
-          exit 1
-
   static-analysis:
     runs-on: ubuntu-latest
     steps:
