@@ -17,3 +17,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMMIT_HASH: ${{ github.sha }}
+        with:
+          title: "Unit Testing failed"
+          assignees: ${{ github.actor }}
+          labels: "bug"
+          body: |
+            Unit tests have failed for the commit ${{ env.COMMIT_HASH }}.
