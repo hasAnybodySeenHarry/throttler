@@ -1,9 +1,7 @@
 ---
-title: Someone just pushed
-# assignees: JasonEtco, matchai
-labels: bug, enhancement
+title: Unit Testing failed
+assignees: { { payload.sender.login } }
+labels: bug
 ---
 
-Someone just pushed, oh no!
-
-Here's who did it: {{ payload.sender.login }}.
+Unit tests have failed for the commit {{ env.COMMIT_HASH }}.
