@@ -36,7 +36,6 @@ jobs:
       - name: Run unit tests
         run: |
           go test ./...
-          exit 1
 
   create-unittest-issue:
     needs: [unit-tests]
@@ -51,52 +50,10 @@ jobs:
 
   close-unittest-issues:
     needs: [unit-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Close fixed issues
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          REPO=${{ github.repository }}
-          CURRENT_BRANCH=${{ github.ref_name }}
-          CURRENT_COMMIT=${{ github.sha }}
-
-          ISSUES=$(gh issue list --repo "$REPO" --label "bug" --state open --json number,title,body 2>/dev/null || echo '[]')
-
-          ISSUES=$(echo "$ISSUES" | tr -d '\000-\031')
-
-          echo "$ISSUES" | jq -c '.[]' | while read -r ISSUE; do
-            ISSUE_NUMBER=$(echo "$ISSUE" | jq -r '.number')
-            ISSUE_TITLE=$(echo "$ISSUE" | jq -r '.title')
-            ISSUE_BODY=$(echo "$ISSUE" | jq -r '.body')
-
-            echo "Processing issue: Number=$ISSUE_NUMBER, Title=$ISSUE_TITLE"
-
-            if [[ "$ISSUE_TITLE" == "Unit Testing failed"* ]]; then
-              FAILED_BRANCH=$(echo "$ISSUE_BODY" | grep -oE '\*\*Branch\*\*: `[^\`]+' | sed 's/.*`//')
-              FAILED_COMMIT=$(echo "$ISSUE_BODY" | grep -oE '\*\*Commit\*\*: `[^\`]+' | sed 's/.*`//')
-
-              echo "Extracted Branch=$FAILED_BRANCH, Commit=$FAILED_COMMIT"
-
-              if [[ "$FAILED_BRANCH" == "$CURRENT_BRANCH" ]]; then
-                if git merge-base --is-ancestor "$FAILED_COMMIT" "$CURRENT_COMMIT"; then
-                  echo "Matching issue found: #$ISSUE_NUMBER"
-                  gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "The issue has been resolved in commit $CURRENT_COMMIT."
-                else
-                  echo "Commit is not a descendant of the current commit."
-                fi
-              else
-                echo "Branch does not match."
-              fi
-            else
-              echo "Skipping issue as it doesn't match the expected title."
-            fi
-          done
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/close-issue.yaml@main
+    with:
+      issue_label: "bug"
+      issue_title: "Unit Testing failed"
 
   static-analysis:
     runs-on: ubuntu-latest
