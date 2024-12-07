@@ -67,6 +67,16 @@ jobs:
         run: |
           ./bin/golangci-lint run
 
+  create-linting-issue:
+    needs: [static-analysis]
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/create-issue.yaml@main
+    if: failure()
+    with:
+      assignees: ${{ github.actor }}
+      issue_template: .github/ISSUE_TEMPLATE/static_analysis_alert.md
+      owner_repository: ${{ github.repository }}
+      commit_hash: ${{ github.sha }}
+
   validate-helm:
     runs-on: ubuntu-latest
     steps:
