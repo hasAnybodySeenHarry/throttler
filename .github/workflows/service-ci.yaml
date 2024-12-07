@@ -80,7 +80,7 @@ jobs:
             echo "Extracted Branch=$FAILED_BRANCH, Commit=$FAILED_COMMIT"
 
             if [[ "$FAILED_BRANCH" == "$CURRENT_BRANCH" ]]; then
-              if git merge-base --is-ancestor "$CURRENT_COMMIT" "$FAILED_COMMIT"; then
+              if git merge-base --is-ancestor "$FAILED_COMMIT" "$CURRENT_COMMIT"; then
                 echo "Matching issue found: #$ISSUE_NUMBER"
                 gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "The issue has been resolved in commit $CURRENT_COMMIT."
               else
