@@ -36,7 +36,6 @@ jobs:
       - name: Run unit tests
         run: |
           go test ./...
-          exit 1
 
   create-unittest-issue:
     needs: [unit-tests]
@@ -52,7 +51,6 @@ jobs:
   close-fixed-issues:
     needs: [unit-tests]
     runs-on: ubuntu-latest
-    if: ${{ always() }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -99,7 +97,6 @@ jobs:
       - name: Run linter
         run: |
           ./bin/golangci-lint run
-          exit 1
 
   create-linting-issue:
     needs: [static-analysis]
