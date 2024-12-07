@@ -36,7 +36,6 @@ jobs:
       - name: Run unit tests
         run: |
           go test ./...
-          exit 1
 
   create-unittest-issue:
     needs: [unit-tests]
