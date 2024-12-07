@@ -38,6 +38,7 @@ jobs:
           go test ./...
 
   create-unittest-issue:
+    needs: [unit-tests]
     uses: hasAnybodySeenHarry/workflows/.github/workflows/create-issue.yaml@main
     if: failure()
     with:
