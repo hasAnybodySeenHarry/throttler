@@ -37,14 +37,14 @@ jobs:
         run: |
           go test ./...
 
-      - name: Create issue if failed
-        uses: hasAnybodySeenHarry/workflows/.github/workflows/create-issue.yaml@main
-        if: failure()
-        with:
-          assignees: ${{ github.actor }}
-          filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
-          owner_repository: ${{ github.repository }}
-          commit_hash: ${{ github.sha }}
+  create-unittest-issue:
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/create-issue.yaml@main
+    if: failure()
+    with:
+      assignees: ${{ github.actor }}
+      filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
+      owner_repository: ${{ github.repository }}
+      commit_hash: ${{ github.sha }}
 
   static-analysis:
     runs-on: ubuntu-latest
