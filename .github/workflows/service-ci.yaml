@@ -36,6 +36,7 @@ jobs:
       - name: Run unit tests
         run: |
           go test ./...
+          exit 1
 
   create-unittest-issue:
     needs: [unit-tests]
@@ -43,7 +44,7 @@ jobs:
     if: failure()
     with:
       assignees: ${{ github.actor }}
-      filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
+      issue_template: .github/ISSUE_TEMPLATE/unit_test_alert.md
       owner_repository: ${{ github.repository }}
       commit_hash: ${{ github.sha }}
 
