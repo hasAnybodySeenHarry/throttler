@@ -1,5 +1,5 @@
 ---
-title: "Code Linting failed"
+title: "Code Linting failed {{ env.COMMIT_HASH }}"
 labels: technical debt
 ---
 

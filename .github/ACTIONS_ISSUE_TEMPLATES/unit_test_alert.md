@@ -1,5 +1,5 @@
 ---
-title: "Unit Testing failed ${{ env.COMMIT_HASH }}"
+title: "Unit Testing failed {{ env.COMMIT_HASH }}"
 labels: bug
 ---
 

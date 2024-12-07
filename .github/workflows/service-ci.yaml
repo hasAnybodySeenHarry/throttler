@@ -49,7 +49,7 @@ jobs:
       commit_hash: ${{ github.sha }}
       branch_name: ${{ github.ref_name }}
 
-  close-fixed-issues:
+  close-unittest-issues:
     needs: [unit-tests]
     runs-on: ubuntu-latest
     steps:
@@ -77,20 +77,24 @@ jobs:
 
             echo "Processing issue: Number=$ISSUE_NUMBER, Title=$ISSUE_TITLE"
 
-            FAILED_BRANCH=$(echo "$ISSUE_BODY" | grep -oE '\*\*Branch\*\*: `[^\`]+' | sed 's/.*`//')
-            FAILED_COMMIT=$(echo "$ISSUE_BODY" | grep -oE '\*\*Commit\*\*: `[^\`]+' | sed 's/.*`//')
+            if [[ "$ISSUE_TITLE" == "Unit Testing failed"* ]]; then
+              FAILED_BRANCH=$(echo "$ISSUE_BODY" | grep -oE '\*\*Branch\*\*: `[^\`]+' | sed 's/.*`//')
+              FAILED_COMMIT=$(echo "$ISSUE_BODY" | grep -oE '\*\*Commit\*\*: `[^\`]+' | sed 's/.*`//')
 
-            echo "Extracted Branch=$FAILED_BRANCH, Commit=$FAILED_COMMIT"
+              echo "Extracted Branch=$FAILED_BRANCH, Commit=$FAILED_COMMIT"
 
-            if [[ "$FAILED_BRANCH" == "$CURRENT_BRANCH" ]]; then
-              if git merge-base --is-ancestor "$FAILED_COMMIT" "$CURRENT_COMMIT"; then
-                echo "Matching issue found: #$ISSUE_NUMBER"
-                gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "The issue has been resolved in commit $CURRENT_COMMIT."
+              if [[ "$FAILED_BRANCH" == "$CURRENT_BRANCH" ]]; then
+                if git merge-base --is-ancestor "$FAILED_COMMIT" "$CURRENT_COMMIT"; then
+                  echo "Matching issue found: #$ISSUE_NUMBER"
+                  gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "The issue has been resolved in commit $CURRENT_COMMIT."
+                else
+                  echo "Commit is not a descendant of the current commit."
+                fi
               else
-                echo "Commit is not a descendant of the current commit."
+                echo "Branch does not match."
               fi
             else
-              echo "Branch does not match."
+              echo "Skipping issue as it doesn't match the expected title."
             fi
           done
 
@@ -123,6 +127,13 @@ jobs:
       owner_repository: ${{ github.repository }}
       commit_hash: ${{ github.sha }}
       branch_name: ${{ github.ref_name }}
+
+  close-linting-issues:
+    needs: [static-analysis]
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/close-issue.yaml@main
+    with:
+      issue_label: "technical debt"
+      issue_title: "Code Linting failed"
 
   validate-helm:
     runs-on: ubuntu-latest
