@@ -36,18 +36,15 @@ jobs:
       - name: Run unit tests
         run: |
           go test ./...
-          exit 1
 
       - name: Create issue if failed
-        uses: JasonEtco/create-an-issue@v2
+        uses: hasAnybodySeenHarry/workflows/.github/workflows/create-issue.yaml@main
         if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMMIT_HASH: ${{ github.sha }}
-          OWNER_REPOSITORY: ${{ github.repository }}
         with:
           assignees: ${{ github.actor }}
           filename: .github/ISSUE_TEMPLATE/unit_test_alert.md
+          owner_repository: ${{ github.repository }}
+          commit_hash: ${{ github.sha }}
 
   static-analysis:
     runs-on: ubuntu-latest
