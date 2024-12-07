@@ -8,9 +8,10 @@ on:
       - "feat/**"
       - "release/**"
       - "releases/**"
-    path-ignore:
+    paths-ignore:
       - "migrations/**"
       - "remote/**"
+      - "**.md"
 
 jobs:
   ci:
