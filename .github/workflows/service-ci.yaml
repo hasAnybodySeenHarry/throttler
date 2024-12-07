@@ -47,6 +47,39 @@ jobs:
       issue_template: .github/ACTIONS_ISSUE_TEMPLATES/unit_test_alert.md
       owner_repository: ${{ github.repository }}
       commit_hash: ${{ github.sha }}
+      branch_name: ${{ github.ref_name }}
+
+  close-fixed-issues:
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Close fixed issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO=${{ github.repository }}
+          CURRENT_BRANCH=${{ github.ref_name }}
+          CURRENT_COMMIT=${{ github.sha }}
+
+          ISSUES=$(gh issue list --repo $REPO --label "bug" --state open --json number,title,body)
+
+          for ISSUE in $(echo "$ISSUES" | jq -c '.[]'); do
+            ISSUE_NUMBER=$(echo "$ISSUE" | jq -r '.number')
+            ISSUE_TITLE=$(echo "$ISSUE" | jq -r '.title')
+            ISSUE_BODY=$(echo "$ISSUE" | jq -r '.body')
+
+            FAILED_BRANCH=$(echo "$ISSUE_BODY" | grep "**Branch**:" | awk '{print $2}' | tr -d '\r')
+            FAILED_COMMIT=$(echo "$ISSUE_BODY" | grep "**Commit**:" | awk '{print $2}' | tr -d '\r')
+
+            if [[ "$FAILED_BRANCH" == "$CURRENT_BRANCH" && "$FAILED_COMMIT" == "$CURRENT_COMMIT" ]]; then
+              echo "Matching issue found: #$ISSUE_NUMBER"
+              gh issue close $ISSUE_NUMBER --repo $REPO --comment "The issue has been resolved in commit $CURRENT_COMMIT."
+            fi
+          done
 
   static-analysis:
     runs-on: ubuntu-latest
@@ -77,6 +110,7 @@ jobs:
       issue_template: .github/ACTIONS_ISSUE_TEMPLATES/static_analysis_alert.md
       owner_repository: ${{ github.repository }}
       commit_hash: ${{ github.sha }}
+      branch_name: ${{ github.ref_name }}
 
   validate-helm:
     runs-on: ubuntu-latest
