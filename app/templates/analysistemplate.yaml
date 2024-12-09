@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: {{ include "app.fullname" . }}-analysis
+  # annotations:
+  #   argocd.argoproj.io/sync-wave: "1"
+  namespace: {{ .Values.namespace }}
+spec:
+  args:
+  - name: service-name
+    value: {{ include "app.fullname" . }}
+  metrics:
+  - name: success-rate
+    interval: {{ .Values.analysis.successRate.interval | quote }}
+    successCondition: {{ .Values.analysis.successRate.successCondition | quote }}
+    failureLimit: {{ .Values.analysis.successRate.failureLimit }}
+    count: {{ .Values.analysis.successRate.count }}
+    provider:
+      prometheus:
+        address: http://prometheus.linkerd-viz.svc.cluster.local:9090
+        query: |
+          (sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview", http_status=~"5.."}[5m])) or vector(0)) / (sum(rate(outbound_http_route_backend_response_statuses_total{backend_name="{{ include "app.fullname" . }}-preview"}[5m])) or vector(0))
