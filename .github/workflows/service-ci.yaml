@@ -6,8 +6,6 @@ on:
       - "develop"
       - "feature/**"
       - "feat/**"
-      - "release/**"
-      - "releases/**"
     paths-ignore:
       - "migrations/**"
       - "remote/**"

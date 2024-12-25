@@ -1,0 +1,21 @@
+name: Staging CI
+on:
+  branch:
+    branches: ['release/**']
+
+jobs:
+  repo-meta:
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@main
+
+  promote-image:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Find Commit SHA for Staging
+      id: image-sha
+      run: |
+        BASE_COMMIT=$(git rev-parse origin/staging)
+        echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
+        echo $BASE_COMMIT
