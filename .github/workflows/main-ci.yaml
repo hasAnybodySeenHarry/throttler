@@ -1,15 +1,14 @@
-name: Staging CI pipeline
+name: Main CI pipeline
 on:
-  push:
-    branches: ['release/**']
-    paths-ignore:
-    - "migrations/**"
-    - "remote/**"
-    - "**.md"
-
+  pull_request:
+    types:
+    - opened
+    - synchronize
+    - reopened
+    branches: [main]
 jobs:
   repo-meta:
-    uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@main
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@v2
 
   promote-image:
     needs: [repo-meta]
@@ -21,7 +20,9 @@ jobs:
     - name: Find Commit SHA for Staging
       id: image-sha
       run: |
-        BASE_COMMIT=$(git rev-parse "${{ github.ref_name }}")
+        MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
+        BASE_COMMIT=$(git merge-base $MERGING_BRANCH develop)
+        
         echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
         echo $BASE_COMMIT
 
@@ -38,12 +39,7 @@ jobs:
 
         echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
         docker pull ${IMAGE_NAME}:${BASE_COMMIT}
-        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:staging
+        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:latest
 
-        echo "Pushing image: ${IMAGE_NAME}:staging"
-        docker push ${IMAGE_NAME}:staging
-
-    - name: Provision Environment
-      needs: [repo-meta]
-      run: |
-        echo "Provisioning the environment"
+        echo "Pushing image: ${IMAGE_NAME}:latest"
+        docker push ${IMAGE_NAME}:latest
