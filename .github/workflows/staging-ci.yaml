@@ -2,11 +2,6 @@ name: Staging CI pipeline
 on:
   push:
     branches: ['release/**']
-    paths-ignore:
-    - "migrations/**"
-    - "remote/**"
-    - "**.md"
-
 jobs:
   repo-meta:
     uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@main
