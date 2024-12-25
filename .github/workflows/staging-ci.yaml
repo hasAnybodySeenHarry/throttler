@@ -8,6 +8,7 @@ jobs:
     uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@main
 
   promote-image:
+    needs: [repo-meta]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
@@ -29,7 +30,7 @@ jobs:
 
     - name: Promote Image
       run: |
-        IMAGE_NAME=docker.io/${{ secrets.docker_username }}/${{ needs.repo-meta.outputs.repository_name }}
+        IMAGE_NAME=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ needs.repo-meta.outputs.repository_name }}
 
         echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
         docker pull ${IMAGE_NAME}:${BASE_COMMIT}
