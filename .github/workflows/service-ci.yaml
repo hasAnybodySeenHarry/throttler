@@ -2,13 +2,13 @@ name: Service CI pipeline
 on:
   push:
     branches:
-      - "develop"
-      - "feature/**"
-      - "feat/**"
+    - "develop"
+    - "feature/**"
+    - "feat/**"
     paths-ignore:
-      - "migrations/**"
-      - "remote/**"
-      - "**.md"
+    - "migrations/**"
+    - "remote/**"
+    - "**.md"
 
 jobs:
   ci:
