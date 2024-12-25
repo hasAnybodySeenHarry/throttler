@@ -43,7 +43,10 @@ jobs:
         echo "Pushing image: ${IMAGE_NAME}:staging"
         docker push ${IMAGE_NAME}:staging
 
+  provision-cluster:
+    needs: [repo-meta]
+    runs-on: ubuntu-latest
+    steps:
     - name: Provision Environment
-      needs: [repo-meta]
       run: |
         echo "Provisioning the environment"
