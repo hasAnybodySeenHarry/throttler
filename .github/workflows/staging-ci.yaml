@@ -16,7 +16,24 @@ jobs:
     - name: Find Commit SHA for Staging
       id: image-sha
       run: |
-        BRANCH_NAME=$(echo "${{ github.ref_name }}")
-        BASE_COMMIT=$(git rev-parse $BRANCH_NAME)
+        BASE_COMMIT=$(git rev-parse "${{ github.ref_name }}")
         echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
         echo $BASE_COMMIT
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        registry: docker.io
+        username: ${{ secrets.docker_username }}
+        password: ${{ secrets.docker_password }}
+
+    - name: Promote Image
+      run: |
+        IMAGE_NAME=docker.io/${{ secrets.docker_username }}/${{ needs.repo-meta.outputs.repository_name }}
+
+        echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
+        docker pull ${IMAGE_NAME}:${BASE_COMMIT}
+        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:staging
+
+        echo "Pushing image: ${IMAGE_NAME}:staging"
+        docker push ${IMAGE_NAME}:staging
