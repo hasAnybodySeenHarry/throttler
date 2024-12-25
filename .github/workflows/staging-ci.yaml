@@ -16,7 +16,6 @@ jobs:
     - name: Find Commit SHA for Staging
       id: image-sha
       run: |
-        REPO_NAME=$(echo "${{ github.repository }}" | sed 's|[^/]*/||')
         BRANCH_NAME=$(echo "${{ github.ref_name }}")
         BASE_COMMIT=$(git rev-parse $BRANCH_NAME)
         echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
