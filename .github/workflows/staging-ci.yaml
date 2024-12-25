@@ -38,3 +38,4 @@ jobs:
 
         echo "Pushing image: ${IMAGE_NAME}:staging"
         docker push ${IMAGE_NAME}:staging
+        
