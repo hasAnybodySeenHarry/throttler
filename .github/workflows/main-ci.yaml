@@ -23,7 +23,7 @@ jobs:
       id: image-sha
       run: |
         MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
-        BASE_COMMIT=$(git merge-base $MERGING_BRANCH develop)
+        BASE_COMMIT=$(git merge-base "remotes/origin/$MERGING_BRANCH" remotes/origin/develop)
         
         echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
         echo $BASE_COMMIT
