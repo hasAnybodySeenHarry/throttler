@@ -38,10 +38,9 @@ jobs:
     - name: Promote Image
       run: |
         IMAGE_NAME=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ needs.repo-meta.outputs.repository_name }}
+        NEW_TAG=${BASE_COMMIT}-latest
 
         echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
         docker pull ${IMAGE_NAME}:${BASE_COMMIT}
-        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:latest
-
-        echo "Pushing image: ${IMAGE_NAME}:latest"
-        docker push ${IMAGE_NAME}:latest
+        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:${NEW_TAG}
+        docker push ${IMAGE_NAME}:${NEW_TAG}
