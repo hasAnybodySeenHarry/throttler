@@ -30,13 +30,25 @@ jobs:
     - name: Promote Image
       run: |
         IMAGE_NAME=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ needs.repo-meta.outputs.repository_name }}
+        NEW_TAG=${BASE_COMMIT}-staging
 
         echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
         docker pull ${IMAGE_NAME}:${BASE_COMMIT}
-        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:staging
+        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:${NEW_TAG}
 
-        echo "Pushing image: ${IMAGE_NAME}:staging"
-        docker push ${IMAGE_NAME}:staging
+        echo "Pushing image: ${IMAGE_NAME}:${NEW_TAG}"
+        docker push ${IMAGE_NAME}:${NEW_TAG}
+
+  trigger-promote:
+    runs-on: ubuntu-latest
+    needs: [promote-image]
+    - name: Trigger Promotion
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.HELM_REPO_PAT }}
+        repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
+        event-type: promote
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "chart_name": "throttler", "version": "1.0.3"}'
 
   provision-cluster:
     needs: [repo-meta]
