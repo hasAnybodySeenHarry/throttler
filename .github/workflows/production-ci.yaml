@@ -44,3 +44,22 @@ jobs:
         docker pull ${IMAGE_NAME}:${BASE_COMMIT}
         docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:${NEW_TAG}
         docker push ${IMAGE_NAME}:${NEW_TAG}
+
+  trigger-promote:
+    runs-on: ubuntu-latest
+    needs: [promote-image]
+    steps:
+    - name: Trigger Promotion
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.HELM_REPO_PAT }}
+        repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
+        event-type: promote
+        client-payload: |
+          {
+            "ref": "${{ github.ref }}",
+            "sha": "${{ github.sha }}",
+            "chart_name": "throttler",
+            "version": "${{ needs.promote-image.outputs.chart_version }}",
+            "dest": "production"
+          }
