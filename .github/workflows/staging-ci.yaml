@@ -42,6 +42,7 @@ jobs:
   trigger-promote:
     runs-on: ubuntu-latest
     needs: [promote-image]
+    steps:
     - name: Trigger Promotion
       uses: peter-evans/repository-dispatch@v3
       with:
