@@ -9,6 +9,8 @@ jobs:
   promote-image:
     needs: [repo-meta]
     runs-on: ubuntu-latest
+    outputs:
+      chart_version: ${{ steps.chart-version.outputs.CHART_VERSION }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -39,6 +41,12 @@ jobs:
         echo "Pushing image: ${IMAGE_NAME}:${NEW_TAG}"
         docker push ${IMAGE_NAME}:${NEW_TAG}
 
+    - name: Retrieve chart version
+      id: chart-version
+      run: |
+        CHART_VERSION="$(cat VERSION_HELM)"
+        echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
+
   trigger-promote:
     runs-on: ubuntu-latest
     needs: [promote-image]
@@ -49,7 +57,14 @@ jobs:
         token: ${{ secrets.HELM_REPO_PAT }}
         repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
         event-type: promote
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "chart_name": "throttler", "version": "1.0.3", "dest": "staging"}'
+        client-payload: |
+          {
+            "ref": "${{ github.ref }}",
+            "sha": "${{ github.sha }}",
+            "chart_name": "throttler",
+            "version": "${{ needs.promote-image.outputs.chart_version }}",
+            "dest": "staging"
+          }
 
   provision-cluster:
     needs: [repo-meta]
