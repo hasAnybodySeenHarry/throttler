@@ -1,4 +1,4 @@
-name: Main CI pipeline
+name: Production CI pipeline
 on:
   pull_request:
     types:
