@@ -49,7 +49,7 @@ jobs:
         token: ${{ secrets.HELM_REPO_PAT }}
         repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
         event-type: promote
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "chart_name": "throttler", "version": "1.0.3"}'
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "chart_name": "throttler", "version": "1.0.3", "dest": "staging"}'
 
   provision-cluster:
     needs: [repo-meta]
