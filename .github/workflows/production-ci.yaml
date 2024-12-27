@@ -10,9 +10,12 @@ jobs:
   repo-meta:
     uses: hasAnybodySeenHarry/workflows/.github/workflows/gen-repo-meta.yaml@v2
 
-  promote-image:
-    needs: [repo-meta]
+  retrieve-versions:
     runs-on: ubuntu-latest
+    outputs:
+      chart_version: ${{ steps.chart-version.outputs.CHART_VERSION }}
+      base_commit: ${{ steps.image-sha.outputs.BASE_COMMIT }}
+    needs: [repo-meta]
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -25,41 +28,26 @@ jobs:
         MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
         BASE_COMMIT=$(git merge-base "remotes/origin/$MERGING_BRANCH" remotes/origin/develop)
         
-        echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_ENV
+        echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_OUTPUT
         echo $BASE_COMMIT
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        registry: docker.io
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-    - name: Promote Image
+    - name: Retrieve chart version
+      id: chart-version
       run: |
-        IMAGE_NAME=docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ needs.repo-meta.outputs.repository_name }}
-        NEW_TAG=${BASE_COMMIT}-latest
+        CHART_VERSION="$(cat VERSION_HELM)"
+        echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
 
-        echo "Pulling image: ${IMAGE_NAME}:${BASE_COMMIT}"
-        docker pull ${IMAGE_NAME}:${BASE_COMMIT}
-        docker tag ${IMAGE_NAME}:${BASE_COMMIT} ${IMAGE_NAME}:${NEW_TAG}
-        docker push ${IMAGE_NAME}:${NEW_TAG}
-
-  trigger-promote:
-    runs-on: ubuntu-latest
-    needs: [promote-image]
-    steps:
-    - name: Trigger Promotion
-      uses: peter-evans/repository-dispatch@v3
-      with:
-        token: ${{ secrets.HELM_REPO_PAT }}
-        repository: ${{ vars.HELM_REPO_OWNER }}/${{ secrets.HELM_REPO_NAME }}
-        event-type: promote
-        client-payload: |
-          {
-            "ref": "${{ github.ref }}",
-            "sha": "${{ github.sha }}",
-            "chart_name": "throttler",
-            "version": "${{ needs.promote-image.outputs.chart_version }}",
-            "dest": "production"
-          }
+  promote-artifacts:
+    needs: [repo-meta, retrieve-versions]
+    uses: hasAnybodySeenHarry/workflows/.github/workflows/promote-artifacts.yaml@main
+    with:
+      destination: "production"
+      base_commit: ${{ needs.retrieve-versions.outputs.base_commit }}
+      chart_version: ${{ needs.retrieve-versions.outputs.chart_version }}
+      chart_name: ${{ needs.repo-meta.outputs.repository_name }}
+    secrets:
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      helm_repo_name: ${{ secrets.HELM_REPO_NAME }}
+      helm_repo_owner: ${{ vars.HELM_REPO_OWNER }}
+      helm_repo_pat: ${{ secrets.HELM_REPO_PAT }}
