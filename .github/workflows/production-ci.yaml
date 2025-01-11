@@ -2,9 +2,9 @@ name: Production CI pipeline
 on:
   pull_request:
     types:
-    - opened
-    - synchronize
-    - reopened
+      - opened
+      # - synchronize
+      # - reopened
     branches: [main]
 jobs:
   repo-meta:
@@ -17,25 +17,25 @@ jobs:
       base_commit: ${{ steps.image-sha.outputs.BASE_COMMIT }}
     needs: [repo-meta]
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Find Commit SHA for Staging
-      id: image-sha
-      run: |
-        MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
-        BASE_COMMIT=$(git merge-base "remotes/origin/$MERGING_BRANCH" remotes/origin/develop)
-        
-        echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_OUTPUT
-        echo $BASE_COMMIT
+      - name: Find Commit SHA for Staging
+        id: image-sha
+        run: |
+          MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
+          BASE_COMMIT=$(git merge-base "remotes/origin/$MERGING_BRANCH" remotes/origin/develop)
 
-    - name: Retrieve chart version
-      id: chart-version
-      run: |
-        CHART_VERSION="$(cat VERSION_HELM)"
-        echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
+          echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_OUTPUT
+          echo $BASE_COMMIT
+
+      - name: Retrieve chart version
+        id: chart-version
+        run: |
+          CHART_VERSION="$(cat VERSION_HELM)"
+          echo "CHART_VERSION=${CHART_VERSION}" >> $GITHUB_OUTPUT
 
   promote-artifacts:
     needs: [repo-meta, retrieve-versions]
