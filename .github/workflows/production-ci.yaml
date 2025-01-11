@@ -4,7 +4,7 @@ on:
     types:
       - opened
       # - synchronize
-      # - reopened
+      - reopened
     branches: [main]
 jobs:
   repo-meta:
