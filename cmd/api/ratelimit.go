@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -20,7 +19,7 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 		"path": r.URL.String(),
 	})
 
-	if rand.Intn(2) == 0 {
+	if app.randGen.Intn(2) == 0 {
 		app.serverError(w, r, errors.New("injected fault"))
 		return
 	}
