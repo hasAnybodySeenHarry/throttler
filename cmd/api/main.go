@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"os"
 	"sync"
 	"time"
@@ -20,9 +21,11 @@ type application struct {
 	clients rpc.Clients
 	cb      *gobreaker.CircuitBreaker
 	metrics *metrics.Metrics
+	randGen *rand.Rand
 }
 
 func main() {
+
 	var cfg config
 	loadConfig(&cfg)
 
@@ -54,6 +57,7 @@ func main() {
 		clients: rpc.NewClients(conn),
 		cb:      cb,
 		metrics: metrics.Register(),
+		randGen: rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 
 	err = app.serve()

@@ -24,5 +24,6 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/redis/go-redis/v9 v9.6.1 // indirect
 	github.com/sony/gobreaker v1.0.0
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	google.golang.org/grpc v1.66.0
 )
