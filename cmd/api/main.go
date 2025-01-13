@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"os"
 	"sync"
 	"time"
@@ -23,6 +24,8 @@ type application struct {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	var cfg config
 	loadConfig(&cfg)
 
