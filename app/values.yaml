@@ -75,14 +75,15 @@ startupProbe:
   path: /v1/healthcheck
   port: 8080
 
-topologySpreadConstraints: []
+topologySpreadConstraints:
+  enabled: true
+  whenUnsatisfiable: DoNotSchedule
 
 extraEnv: []
 
-podDisruptionBudget:
-  enabled: false
+pdb:
+  enabled: true
   minAvailable: 1
-  maxUnavailable: ""
 
 env:
 - name: GRPC_ADDR
