@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,11 +17,6 @@ func (app *application) ratelimitHandler(w http.ResponseWriter, r *http.Request)
 	app.logger.Info("Request Received", map[string]string{
 		"path": r.URL.String(),
 	})
-
-	if app.randGen.Intn(2) == 0 {
-		app.serverError(w, r, errors.New("injected fault"))
-		return
-	}
 
 	var key string
 	var err error

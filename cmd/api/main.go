@@ -8,9 +8,9 @@ import (
 
 	"github.com/sony/gobreaker"
 	"harry2an.com/throttler/internal/data"
+	rpc "harry2an.com/throttler/internal/grpc"
 	"harry2an.com/throttler/internal/jsonlog"
 	"harry2an.com/throttler/internal/metrics"
-	"harry2an.com/throttler/internal/rpc"
 )
 
 type application struct {
