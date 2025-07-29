@@ -61,41 +61,41 @@ spec:
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }} 
       {{- end }}
       serviceAccountName: {{ include "app.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.livenessProbe.path | default "/" }}
-              port: {{ .Values.livenessProbe.port | default "http" }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.readinessProbe.path | default "/" }}
-              port: {{ .Values.readinessProbe.port | default "http" }}
-          startupProbe:
-            httpGet:
-              path: {{ .Values.startupProbe.path | default "/" }}
-              port: {{ .Values.startupProbe.port | default "http" }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          env:
-            {{- toYaml .Values.env | nindent 12 }}
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.port }}
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path | default "/" }}
+            port: {{ .Values.livenessProbe.port | default "http" }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.readinessProbe.path | default "/" }}
+            port: {{ .Values.readinessProbe.port | default "http" }}
+        startupProbe:
+          httpGet:
+            path: {{ .Values.startupProbe.path | default "/" }}
+            port: {{ .Values.startupProbe.port | default "http" }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        {{- with .Values.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        env:
+          {{- toYaml .Values.env | nindent 12 }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
