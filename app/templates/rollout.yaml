@@ -19,7 +19,7 @@ spec:
       trafficRouting:
         plugins:
           argoproj-labs/gatewayAPI:
-            httpRoute: {{ include "app.fullname" . }}-rollouts-http-route
+            httpRoute: {{ include "app.fullname" . }}-app-route
             namespace: {{ .Values.namespace }}
       steps:
       - setWeight: 30
@@ -121,3 +121,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      
