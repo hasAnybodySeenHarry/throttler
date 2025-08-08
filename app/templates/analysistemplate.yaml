@@ -2,8 +2,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
   name: {{ include "app.fullname" . }}-analysis
-  # annotations:
-  #   argocd.argoproj.io/sync-wave: "1"
   namespace: {{ .Values.namespace }}
 spec:
   args:
