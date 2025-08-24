@@ -1,0 +1,17 @@
+name: Test CI
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ci-runners
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Run build step
+        run: echo "Hello from ARC runner with label ci-runners!"
