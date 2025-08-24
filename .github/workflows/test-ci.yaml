@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ci-runners
+    runs-on: [self-hosted, ci-runners]
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
