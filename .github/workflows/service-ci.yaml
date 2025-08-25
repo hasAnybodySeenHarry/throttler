@@ -10,6 +10,7 @@ on:
 
 jobs:
   ci:
+    runs-on: k8s
     uses: hasAnybodySeenHarry/workflows/.github/workflows/service-ci.yaml@main
     with:
       go_version: "1.22"
