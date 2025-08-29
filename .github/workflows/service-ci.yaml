@@ -11,6 +11,9 @@ on:
 jobs:
   ci:
     uses: hasAnybodySeenHarry/workflows/.github/workflows/service-ci.yaml@main
+    permissions:
+      contents: read
+      id-token: write
     with:
       go_version: "1.22"
       helm_version: "v3.13.3"
