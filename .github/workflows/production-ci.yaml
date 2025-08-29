@@ -24,8 +24,9 @@ jobs:
 
     - name: Find Commit SHA for Staging
       id: image-sha
+      env:
+        MERGING_BRANCH: ${{ github.event.pull_request.head.ref }}
       run: |
-        MERGING_BRANCH="${{ github.event.pull_request.head.ref }}"
         BASE_COMMIT=$(git merge-base "remotes/origin/$MERGING_BRANCH" remotes/origin/develop)
 
         echo "BASE_COMMIT=${BASE_COMMIT}" >> $GITHUB_OUTPUT
