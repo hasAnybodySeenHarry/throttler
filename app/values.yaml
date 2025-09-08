@@ -83,7 +83,7 @@ extraEnv: []
 
 pdb:
   enabled: true
-  minAvailable: 1
+  minAvailable: 0
 
 env:
 - name: GRPC_ADDR
